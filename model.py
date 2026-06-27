@@ -55,7 +55,7 @@ import torch
 def scale_embeddings_by_sqrt_d_model(embeddings, d_model):
     """Scale a token embedding tensor by sqrt(d_model)."""
     # TODO: rescale embeddings by sqrt(d_model) as in the original Transformer paper
-    return embeddings*math.sqrt(d_model)
+    return torch.tensor(embeddings)*math.sqrt(d_model)
 
 # Step 8 - compute_positional_div_term (not yet solved)
 # TODO: implement
