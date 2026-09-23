@@ -40,55 +40,55 @@ python scaffold.py
 - [x] **28.** split_qkv_into_heads
 - [x] **29.** multi_head_scaled_dot_product_attention
 - [x] **30.** merge_heads_and_project_output
-- [ ] **31.** assemble_multi_head_attention_forward
-- [ ] **32.** apply_ffn_first_linear_and_relu
-- [ ] **33.** apply_ffn_second_linear
-- [ ] **34.** position_wise_feed_forward_network
-- [ ] **35.** compute_layer_norm_mean_and_variance
-- [ ] **36.** normalize_and_scale_with_gamma_beta
-- [ ] **37.** apply_residual_add_and_norm
-- [ ] **38.** apply_dropout_with_keep_mask
-- [ ] **39.** encoder_layer_self_attention_sublayer
-- [ ] **40.** encoder_layer_feed_forward_sublayer
-- [ ] **41.** assemble_encoder_layer
-- [ ] **42.** stack_encoder_layers
-- [ ] **43.** decoder_layer_masked_self_attention_sublayer
-- [ ] **44.** decoder_layer_cross_attention_sublayer
-- [ ] **45.** decoder_layer_feed_forward_sublayer
-- [ ] **46.** assemble_decoder_layer
-- [ ] **47.** stack_decoder_layers
-- [ ] **48.** apply_final_output_projection
-- [ ] **49.** tie_output_projection_to_token_embeddings
-- [ ] **50.** apply_log_softmax_over_vocab
-- [ ] **51.** run_transformer_forward
-- [ ] **52.** init_encoder_layer_parameters
-- [ ] **53.** init_decoder_layer_parameters
-- [ ] **54.** init_embedding_and_projection_parameters
-- [ ] **55.** collect_model_parameters_into_list
-- [ ] **56.** shift_targets_right_with_start_token
-- [ ] **57.** compute_noam_learning_rate
-- [ ] **58.** build_uniform_smoothing_distribution
-- [ ] **59.** set_confidence_on_gold_tokens
-- [ ] **60.** zero_pad_column_and_pad_token_rows
-- [ ] **61.** compute_label_smoothed_kl_loss
-- [ ] **62.** average_loss_over_non_pad_tokens
-- [ ] **63.** compute_token_accuracy_ignoring_pad
-- [ ] **64.** initialize_adam_optimizer_state
-- [ ] **65.** update_adam_first_moment
-- [ ] **66.** update_adam_second_moment
-- [ ] **67.** apply_adam_bias_correction
-- [ ] **69.** apply_adam_step_to_all_parameters
-- [ ] **70.** zero_all_parameter_gradients
-- [ ] **71.** compute_batch_training_loss
-- [ ] **72.** run_training_step_with_backprop
-- [ ] **73.** run_training_loop_for_steps
-- [ ] **74.** pick_next_token_by_argmax
-- [ ] **75.** compute_length_penalty
-- [ ] **76.** compute_candidate_scores
-- [ ] **77.** select_top_k_candidates
-- [ ] **78.** append_tokens_to_beam_sequences
-- [ ] **79.** mark_finished_beams
-- [ ] **80.** select_best_finished_beam
+- [x] **31.** assemble_multi_head_attention_forward
+- [x] **32.** apply_ffn_first_linear_and_relu
+- [x] **33.** apply_ffn_second_linear
+- [x] **34.** position_wise_feed_forward_network
+- [x] **35.** compute_layer_norm_mean_and_variance
+- [x] **36.** normalize_and_scale_with_gamma_beta
+- [x] **37.** apply_residual_add_and_norm
+- [x] **38.** apply_dropout_with_keep_mask
+- [x] **39.** encoder_layer_self_attention_sublayer
+- [x] **40.** encoder_layer_feed_forward_sublayer
+- [x] **41.** assemble_encoder_layer
+- [x] **42.** stack_encoder_layers
+- [x] **43.** decoder_layer_masked_self_attention_sublayer
+- [x] **44.** decoder_layer_cross_attention_sublayer
+- [x] **45.** decoder_layer_feed_forward_sublayer
+- [x] **46.** assemble_decoder_layer
+- [x] **47.** stack_decoder_layers
+- [x] **48.** apply_final_output_projection
+- [x] **49.** tie_output_projection_to_token_embeddings
+- [x] **50.** apply_log_softmax_over_vocab
+- [x] **51.** run_transformer_forward
+- [x] **52.** init_encoder_layer_parameters
+- [x] **53.** init_decoder_layer_parameters
+- [x] **54.** init_embedding_and_projection_parameters
+- [x] **55.** collect_model_parameters_into_list
+- [x] **56.** shift_targets_right_with_start_token
+- [x] **57.** compute_noam_learning_rate
+- [x] **58.** build_uniform_smoothing_distribution
+- [x] **59.** set_confidence_on_gold_tokens
+- [x] **60.** zero_pad_column_and_pad_token_rows
+- [x] **61.** compute_label_smoothed_kl_loss
+- [x] **62.** average_loss_over_non_pad_tokens
+- [x] **63.** compute_token_accuracy_ignoring_pad
+- [x] **64.** initialize_adam_optimizer_state
+- [x] **65.** update_adam_first_moment
+- [x] **66.** update_adam_second_moment
+- [x] **67.** apply_adam_bias_correction
+- [x] **69.** apply_adam_step_to_all_parameters
+- [x] **70.** zero_all_parameter_gradients
+- [x] **71.** compute_batch_training_loss
+- [x] **72.** run_training_step_with_backprop
+- [x] **73.** run_training_loop_for_steps
+- [x] **74.** pick_next_token_by_argmax
+- [x] **75.** compute_length_penalty
+- [x] **76.** compute_candidate_scores
+- [x] **77.** select_top_k_candidates
+- [x] **78.** append_tokens_to_beam_sequences
+- [x] **79.** mark_finished_beams
+- [x] **80.** select_best_finished_beam
 
 ---
 

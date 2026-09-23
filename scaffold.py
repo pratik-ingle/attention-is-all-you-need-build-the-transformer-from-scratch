@@ -13,7 +13,7 @@ a couple of training steps, and greedy/argmax next-token selection."""
 import numpy as np
 import torch
 
-from solution import (
+from model import (  # noqa: F401 — local assembled solutions (Deep-ML uses `solution`)
     build_token_to_id_vocab, build_id_to_token_vocab,
     encode_sentence_to_ids, decode_ids_to_tokens,
     pad_id_sequence, stack_padded_sequences_to_batch,

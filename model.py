@@ -4,7 +4,10 @@ Attention Is All You Need: Build the Transformer From Scratch
 Assembled from your step-by-step solutions.
 """
 
+import math
+
 import numpy as np
+import torch
 
 # Step 1 - build_token_to_id_vocab
 def build_token_to_id_vocab(sentences, specials=('<pad>', '<bos>', '<eos>', '<unk>')):
@@ -41,7 +44,6 @@ def pad_id_sequence(ids, max_len, pad_id):
     return list(ids) + [pad_id] * (max_len - len(ids))
 
 # Step 6 - stack_padded_sequences_to_batch
-import torch
 
 def stack_padded_sequences_to_batch(padded_sequences):
     """Stack a list of equal-length padded id sequences into a 2D LongTensor batch."""
@@ -49,23 +51,19 @@ def stack_padded_sequences_to_batch(padded_sequences):
     return torch.tensor(padded_sequences, dtype=torch.long)
 
 # Step 7 - scale_embeddings_by_sqrt_d_model
-import math
-import torch
 
 def scale_embeddings_by_sqrt_d_model(embeddings, d_model):
     """Scale a token embedding tensor by sqrt(d_model)."""
     # TODO: rescale embeddings by sqrt(d_model) as in the original Transformer paper
-    return torch.tensor(embeddings)*math.sqrt(d_model)
+    return embeddings * math.sqrt(d_model)
 
 # Step 8 - compute_positional_div_term
-import torch
 
 def compute_positional_div_term(d_model):
     # TODO: return a 1D FloatTensor of length d_model // 2 holding the sinusoidal frequency divisors
     return torch.tensor([1/ 10000 ** (2*i/d_model) for i in range (d_model//2)])
 
 # Step 9 - build_position_index_column
-import torch
 
 def build_position_index_column(max_len):
     """Return a (max_len, 1) float tensor of [0, 1, ..., max_len-1]."""
@@ -73,7 +71,6 @@ def build_position_index_column(max_len):
     return torch.arange(max_len, dtype=torch.float32).reshape(-1, 1)
 
 # Step 10 - fill_even_indices_with_sin
-import torch
 
 def fill_even_indices_with_sin(pe, position, div_term):
     """Fill even feature indices of pe with sin(position * div_term)."""
@@ -83,7 +80,6 @@ def fill_even_indices_with_sin(pe, position, div_term):
     return pe
 
 # Step 11 - fill_odd_indices_with_cos
-import torch
 
 def fill_odd_indices_with_cos(pe, position, div_term):
     # TODO: fill the odd-indexed columns of pe with cos(position * div_term)
@@ -91,7 +87,6 @@ def fill_odd_indices_with_cos(pe, position, div_term):
     return pe
 
 # Step 12 - build_sinusoidal_positional_encoding
-import torch
 
 def build_sinusoidal_positional_encoding(max_len, d_model):
     """Assemble the (max_len, d_model) sinusoidal positional encoding matrix."""
@@ -105,7 +100,6 @@ def build_sinusoidal_positional_encoding(max_len, d_model):
     return pe
 
 # Step 13 - add_positional_encoding_to_embeddings
-import torch
 
 def add_positional_encoding_to_embeddings(embedded_batch, positional_encoding):
     # TODO: add the first L rows of positional_encoding to embedded_batch and return the sum.
@@ -113,7 +107,6 @@ def add_positional_encoding_to_embeddings(embedded_batch, positional_encoding):
     return embedded_batch + positional_encoding[:shape_emb[1]]
 
 # Step 14 - build_padding_mask
-import torch
 
 def build_padding_mask(token_ids, pad_id):
     """Return a (B, 1, 1, L) bool mask: True where token_ids != pad_id."""
@@ -121,7 +114,6 @@ def build_padding_mask(token_ids, pad_id):
     return (token_ids != pad_id).unsqueeze(1).unsqueeze(2)
 
 # Step 15 - build_causal_mask
-import torch
 
 def build_causal_mask(seq_len):
     """Return a (1, 1, seq_len, seq_len) bool mask, True on and below diagonal."""
@@ -131,14 +123,12 @@ def build_causal_mask(seq_len):
     return mask.unsqueeze(0).unsqueeze(0)
 
 # Step 16 - combine_padding_and_causal_masks
-import torch
 
 def combine_padding_and_causal_masks(padding_mask, causal_mask):
     # TODO: combine a (B,1,1,L) padding mask with a (1,1,L,L) causal mask into (B,1,L,L).
     return padding_mask & causal_mask
 
 # Step 17 - compute_raw_attention_scores
-import torch
 
 def compute_raw_attention_scores(query, key):
     """Compute raw attention scores Q @ K^T over the last two dimensions."""
@@ -146,15 +136,12 @@ def compute_raw_attention_scores(query, key):
     return (query @ key.transpose(-2,-1))
 
 # Step 18 - scale_attention_scores
-import torch
-import math
 
 def scale_attention_scores(scores, d_k):
     # TODO: divide raw attention scores by sqrt(d_k) to stabilize softmax inputs
     return scores / math.sqrt(d_k)
 
 # Step 19 - mask_attention_scores_with_neg_inf
-import torch
 
 def mask_attention_scores_with_neg_inf(scores, mask):
     """Set entries of scores where mask is False to -inf."""
@@ -162,7 +149,6 @@ def mask_attention_scores_with_neg_inf(scores, mask):
     return scores.masked_fill(mask == False, float('-inf'))
 
 # Step 20 - softmax_attention_weights
-import torch
 
 def softmax_attention_weights(masked_scores):
     # TODO: softmax over the last axis, zeroing rows that are entirely -inf
@@ -170,7 +156,6 @@ def softmax_attention_weights(masked_scores):
     return weights.nan_to_num(0.0)
 
 # Step 21 - apply_attention_weights_to_values
-import torch
 
 def apply_attention_weights_to_values(attention_weights, value):
     """Multiply attention weights by the value matrix to produce context vectors."""
@@ -178,7 +163,6 @@ def apply_attention_weights_to_values(attention_weights, value):
     return attention_weights @ value
 
 # Step 22 - scaled_dot_product_attention
-import torch
 
 def scaled_dot_product_attention(query, key, value, mask=None):
     """Run scaled dot-product attention; return (context, attention_weights)."""
@@ -191,7 +175,6 @@ def scaled_dot_product_attention(query, key, value, mask=None):
     return context, weight
 
 # Step 23 - split_last_dim_into_heads
-import torch
 
 def split_last_dim_into_heads(tensor, num_heads):
     # TODO: reshape (B, L, d_model) into (B, L, num_heads, d_model // num_heads)
@@ -199,14 +182,12 @@ def split_last_dim_into_heads(tensor, num_heads):
     return tensor.reshape(B, L, num_heads, d_model//num_heads)
 
 # Step 24 - transpose_heads_before_sequence
-import torch
 
 def transpose_heads_before_sequence(split_tensor):
     # TODO: rearrange (B, L, num_heads, d_k) into (B, num_heads, L, d_k).
     return split_tensor.transpose(1,2)
 
 # Step 25 - merge_heads_back_to_model_dim
-import torch
 
 def merge_heads_back_to_model_dim(multi_head_tensor):
     # TODO: merge the head axis back into the feature axis to reconstruct d_model
@@ -231,7 +212,6 @@ def project_to_query_key_value(x, w_q, b_q, w_k, b_k, w_v, b_v):
     return q, k, v
 
 # Step 28 - split_qkv_into_heads
-import torch
 
 def split_qkv_into_heads(q, k, v, num_heads):
     # TODO: split each of q, k, v into (B, num_heads, L, d_k) and return as a tuple
@@ -243,164 +223,552 @@ def split_qkv_into_heads(q, k, v, num_heads):
     return split(q), split(k), split(v)
 
 # Step 29 - multi_head_scaled_dot_product_attention
-import torch
 
 def multi_head_scaled_dot_product_attention(q_h, k_h, v_h, mask=None):
     # TODO: run scaled dot-product attention over per-head Q, K, V and return (context, weights)
     return scaled_dot_product_attention(q_h, k_h, v_h, mask)
 
 # Step 30 - merge_heads_and_project_output
-import torch
 
 def merge_heads_and_project_output(context, w_o, b_o):
     # TODO: merge the head axis back into d_model and apply the output linear projection.
     merged = merge_heads_back_to_model_dim(context)   # (B, L, d_model)
     return apply_linear_projection(merged, w_o, b_o)  # (B, L, d_model)
 
-# Step 31 - assemble_multi_head_attention_forward (not yet solved)
-# TODO: implement
+# Step 31 - assemble_multi_head_attention_forward
+def assemble_multi_head_attention_forward(query, key, value, w_q, w_k, w_v, w_o, num_heads, mask=None):
+    # TODO: project Q/K/V, split into heads, run scaled dot-product attention, merge heads, output projection.
+    q = apply_linear_projection(query, w_q, None)
+    k = apply_linear_projection(key, w_k, None)
+    v = apply_linear_projection(value, w_v, None)
+    q_h, k_h, v_h = split_qkv_into_heads(q, k, v, num_heads)
+    context, _ = multi_head_scaled_dot_product_attention(q_h, k_h, v_h, mask)
+    return merge_heads_and_project_output(context, w_o, None)
 
-# Step 32 - apply_ffn_first_linear_and_relu (not yet solved)
-# TODO: implement
+# Step 32 - apply_ffn_first_linear_and_relu
 
-# Step 33 - apply_ffn_second_linear (not yet solved)
-# TODO: implement
+def apply_ffn_first_linear_and_relu(x, w1, b1):
+    # TODO: project x by w1, add b1, then apply a ReLU activation.
+    return torch.relu(x @ w1 + b1)
 
-# Step 34 - position_wise_feed_forward_network (not yet solved)
-# TODO: implement
+# Step 33 - apply_ffn_second_linear
 
-# Step 35 - compute_layer_norm_mean_and_variance (not yet solved)
-# TODO: implement
+def apply_ffn_second_linear(hidden, w2, b2):
+    # TODO: project hidden (..., d_ff) back to (..., d_model) via w2 and b2.
+    return hidden @ w2 + b2
 
-# Step 36 - normalize_and_scale_with_gamma_beta (not yet solved)
-# TODO: implement
+# Step 34 - position_wise_feed_forward_network
+def position_wise_feed_forward_network(x, w1, b1, w2, b2):
+    # TODO: compose the two FFN linears with a ReLU in between, returning shape (B, T, d_model).
+    return apply_ffn_second_linear(apply_ffn_first_linear_and_relu(x, w1, b1), w2, b2)
 
-# Step 37 - apply_residual_add_and_norm (not yet solved)
-# TODO: implement
+# Step 35 - compute_layer_norm_mean_and_variance
 
-# Step 38 - apply_dropout_with_keep_mask (not yet solved)
-# TODO: implement
+def compute_layer_norm_mean_and_variance(x):
+    # TODO: return (mean, variance) reduced over the last dim with shape (..., 1)
+    mean = x.mean(dim=-1, keepdim=True)
+    var = x.var(dim=-1, keepdim=True, unbiased=False)
+    return mean, var
 
-# Step 39 - encoder_layer_self_attention_sublayer (not yet solved)
-# TODO: implement
+# Step 36 - normalize_and_scale_with_gamma_beta
 
-# Step 40 - encoder_layer_feed_forward_sublayer (not yet solved)
-# TODO: implement
+def normalize_and_scale_with_gamma_beta(x, gamma, beta, eps=1e-5):
+    # TODO: standardize x along the last axis then apply gamma and beta affine transform
+    mean, var = compute_layer_norm_mean_and_variance(x)
+    return gamma * (x - mean) / torch.sqrt(var + eps) + beta
 
-# Step 41 - assemble_encoder_layer (not yet solved)
-# TODO: implement
+# Step 37 - apply_residual_add_and_norm
 
-# Step 42 - stack_encoder_layers (not yet solved)
-# TODO: implement
+def apply_residual_add_and_norm(residual_input, sublayer_output, gamma, beta, eps=1e-5):
+    # TODO: combine the residual with the sublayer output and layer-normalize the result.
+    return normalize_and_scale_with_gamma_beta(residual_input + sublayer_output, gamma, beta, eps)
 
-# Step 43 - decoder_layer_masked_self_attention_sublayer (not yet solved)
-# TODO: implement
+# Step 38 - apply_dropout_with_keep_mask
+def apply_dropout_with_keep_mask(x, keep_mask, keep_prob):
+    # TODO: multiply x by the boolean keep_mask and rescale by 1/keep_prob.
+    return x * keep_mask.to(dtype=x.dtype) / keep_prob
 
-# Step 44 - decoder_layer_cross_attention_sublayer (not yet solved)
-# TODO: implement
+# Step 39 - encoder_layer_self_attention_sublayer
+def encoder_layer_self_attention_sublayer(x, w_q, w_k, w_v, w_o, gamma, beta, num_heads, src_mask):
+    # TODO: run multi-head self-attention on x and wrap with residual add-and-norm.
+    attn_out = assemble_multi_head_attention_forward(x, x, x, w_q, w_k, w_v, w_o, num_heads, src_mask)
+    return apply_residual_add_and_norm(x, attn_out, gamma, beta)
 
-# Step 45 - decoder_layer_feed_forward_sublayer (not yet solved)
-# TODO: implement
+# Step 40 - encoder_layer_feed_forward_sublayer
+def encoder_layer_feed_forward_sublayer(x, w1, b1, w2, b2, gamma, beta):
+    # TODO: run the position-wise FFN on x and wrap it with residual add-and-norm.
+    ffn_out = position_wise_feed_forward_network(x, w1, b1, w2, b2)
+    return apply_residual_add_and_norm(x, ffn_out, gamma, beta)
 
-# Step 46 - assemble_decoder_layer (not yet solved)
-# TODO: implement
+# Step 41 - assemble_encoder_layer
+def assemble_encoder_layer(x, layer_params, num_heads, src_mask):
+    # TODO: chain the self-attention sublayer and the feed-forward sublayer using layer_params.
+    x = encoder_layer_self_attention_sublayer(
+        x,
+        layer_params['w_q'], layer_params['w_k'], layer_params['w_v'], layer_params['w_o'],
+        layer_params['attn_gamma'], layer_params['attn_beta'],
+        num_heads, src_mask,
+    )
+    x = encoder_layer_feed_forward_sublayer(
+        x,
+        layer_params['w1'], layer_params['b1'], layer_params['w2'], layer_params['b2'],
+        layer_params['ffn_gamma'], layer_params['ffn_beta'],
+    )
+    return x
 
-# Step 47 - stack_decoder_layers (not yet solved)
-# TODO: implement
+# Step 42 - stack_encoder_layers
+def stack_encoder_layers(x, encoder_layer_params_list, num_heads, src_mask):
+    # TODO: sequentially apply each encoder layer to the running hidden state and return the final tensor.
+    for layer_params in encoder_layer_params_list:
+        x = assemble_encoder_layer(x, layer_params, num_heads, src_mask)
+    return x
 
-# Step 48 - apply_final_output_projection (not yet solved)
-# TODO: implement
+# Step 43 - decoder_layer_masked_self_attention_sublayer
 
-# Step 49 - tie_output_projection_to_token_embeddings (not yet solved)
-# TODO: implement
+def decoder_layer_masked_self_attention_sublayer(y, w_q, w_k, w_v, w_o, gamma, beta, num_heads, tgt_mask):
+    # TODO: run masked multi-head self-attention on y and wrap with residual add-and-norm.
+    attn_out = assemble_multi_head_attention_forward(y, y, y, w_q, w_k, w_v, w_o, num_heads, tgt_mask)
+    return apply_residual_add_and_norm(y, attn_out, gamma, beta)
 
-# Step 50 - apply_log_softmax_over_vocab (not yet solved)
-# TODO: implement
+# Step 44 - decoder_layer_cross_attention_sublayer
 
-# Step 51 - run_transformer_forward (not yet solved)
-# TODO: implement
+def decoder_layer_cross_attention_sublayer(y, encoder_output, w_q, w_k, w_v, w_o, gamma, beta, num_heads, src_mask):
+    # TODO: run multi-head cross-attention (Q from y, K/V from encoder_output) and wrap with add-and-norm
+    attn_out = assemble_multi_head_attention_forward(
+        y, encoder_output, encoder_output, w_q, w_k, w_v, w_o, num_heads, src_mask
+    )
+    return apply_residual_add_and_norm(y, attn_out, gamma, beta)
 
-# Step 52 - init_encoder_layer_parameters (not yet solved)
-# TODO: implement
+# Step 45 - decoder_layer_feed_forward_sublayer
 
-# Step 53 - init_decoder_layer_parameters (not yet solved)
-# TODO: implement
+def decoder_layer_feed_forward_sublayer(y, w1, b1, w2, b2, gamma, beta):
+    # TODO: run the position-wise FFN on y and wrap it with residual add-and-norm
+    ffn_out = position_wise_feed_forward_network(y, w1, b1, w2, b2)
+    return apply_residual_add_and_norm(y, ffn_out, gamma, beta)
 
-# Step 54 - init_embedding_and_projection_parameters (not yet solved)
-# TODO: implement
+# Step 46 - assemble_decoder_layer
+def assemble_decoder_layer(y, encoder_output, layer_params, num_heads, src_mask, tgt_mask):
+    """Run a full decoder layer: masked self-attention, cross-attention, then FFN.
 
-# Step 55 - collect_model_parameters_into_list (not yet solved)
-# TODO: implement
+    layer_params keys (all torch tensors):
+      masked self-attention : w_q_self, w_k_self, w_v_self, w_o_self, self_gamma, self_beta
+      cross-attention       : w_q_cross, w_k_cross, w_v_cross, w_o_cross, cross_gamma, cross_beta
+      feed-forward          : w1, b1, w2, b2, ffn_gamma, ffn_beta
+    """
+    # TODO: chain the three decoder sublayers using params from layer_params.
+    y = decoder_layer_masked_self_attention_sublayer(
+        y,
+        layer_params['w_q_self'], layer_params['w_k_self'],
+        layer_params['w_v_self'], layer_params['w_o_self'],
+        layer_params['self_gamma'], layer_params['self_beta'],
+        num_heads, tgt_mask,
+    )
+    y = decoder_layer_cross_attention_sublayer(
+        y, encoder_output,
+        layer_params['w_q_cross'], layer_params['w_k_cross'],
+        layer_params['w_v_cross'], layer_params['w_o_cross'],
+        layer_params['cross_gamma'], layer_params['cross_beta'],
+        num_heads, src_mask,
+    )
+    y = decoder_layer_feed_forward_sublayer(
+        y,
+        layer_params['w1'], layer_params['b1'], layer_params['w2'], layer_params['b2'],
+        layer_params['ffn_gamma'], layer_params['ffn_beta'],
+    )
+    return y
 
-# Step 56 - shift_targets_right_with_start_token (not yet solved)
-# TODO: implement
+# Step 47 - stack_decoder_layers
+def stack_decoder_layers(y, encoder_output, decoder_layer_params_list, num_heads, src_mask, tgt_mask):
+    # TODO: sequentially apply each decoder layer to the running target hidden state.
+    for layer_params in decoder_layer_params_list:
+        y = assemble_decoder_layer(y, encoder_output, layer_params, num_heads, src_mask, tgt_mask)
+    return y
 
-# Step 57 - compute_noam_learning_rate (not yet solved)
-# TODO: implement
+# Step 48 - apply_final_output_projection
+def apply_final_output_projection(decoder_output, output_projection_weight, output_projection_bias=None):
+    # TODO: project decoder hidden states (B, T, D) to vocabulary logits (B, T, V).
+    return apply_linear_projection(decoder_output, output_projection_weight, output_projection_bias)
 
-# Step 58 - build_uniform_smoothing_distribution (not yet solved)
-# TODO: implement
+# Step 49 - tie_output_projection_to_token_embeddings
 
-# Step 59 - set_confidence_on_gold_tokens (not yet solved)
-# TODO: implement
+def tie_output_projection_to_token_embeddings(token_embedding_weight):
+    """Return an output projection weight that shares storage with token_embedding_weight.
 
-# Step 60 - zero_pad_column_and_pad_token_rows (not yet solved)
-# TODO: implement
+    Input shape: (vocab_size, d_model). Output shape: (d_model, vocab_size).
+    """
+    # TODO: return an output projection weight tied to the token embedding matrix
+    return token_embedding_weight.t()
 
-# Step 61 - compute_label_smoothed_kl_loss (not yet solved)
-# TODO: implement
+# Step 50 - apply_log_softmax_over_vocab
 
-# Step 62 - average_loss_over_non_pad_tokens (not yet solved)
-# TODO: implement
+def apply_log_softmax_over_vocab(logits):
+    # TODO: Convert decoder logits (B, T, V) into log probabilities over the vocabulary axis.
+    return torch.log_softmax(logits, dim=-1)
 
-# Step 63 - compute_token_accuracy_ignoring_pad (not yet solved)
-# TODO: implement
+# Step 51 - run_transformer_forward
+def run_transformer_forward(src_ids, tgt_ids, model_params, num_heads, pad_id):
+    # TODO: embed src+tgt, add PE, build masks, run encoder/decoder, project to log probs.
+    token_embedding = model_params['token_embedding']
+    d_model = token_embedding.size(-1)
 
-# Step 64 - initialize_adam_optimizer_state (not yet solved)
-# TODO: implement
+    src_emb = scale_embeddings_by_sqrt_d_model(token_embedding[src_ids], d_model)
+    tgt_emb = scale_embeddings_by_sqrt_d_model(token_embedding[tgt_ids], d_model)
 
-# Step 65 - update_adam_first_moment (not yet solved)
-# TODO: implement
+    max_len = max(src_ids.size(1), tgt_ids.size(1))
+    pe = build_sinusoidal_positional_encoding(max_len, d_model)
+    src_emb = add_positional_encoding_to_embeddings(src_emb, pe)
+    tgt_emb = add_positional_encoding_to_embeddings(tgt_emb, pe)
 
-# Step 66 - update_adam_second_moment (not yet solved)
-# TODO: implement
+    src_mask = build_padding_mask(src_ids, pad_id)
+    tgt_pad_mask = build_padding_mask(tgt_ids, pad_id)
+    causal_mask = build_causal_mask(tgt_ids.size(1))
+    tgt_mask = combine_padding_and_causal_masks(tgt_pad_mask, causal_mask)
 
-# Step 67 - apply_adam_bias_correction (not yet solved)
-# TODO: implement
+    enc_out = stack_encoder_layers(src_emb, model_params['encoder_layers'], num_heads, src_mask)
+    dec_out = stack_decoder_layers(
+        tgt_emb, enc_out, model_params['decoder_layers'], num_heads, src_mask, tgt_mask
+    )
+    logits = apply_final_output_projection(dec_out, model_params['output_projection'])
+    return apply_log_softmax_over_vocab(logits)
 
-# Step 69 - apply_adam_step_to_all_parameters (not yet solved)
-# TODO: implement
+# Step 52 - init_encoder_layer_parameters
 
-# Step 70 - zero_all_parameter_gradients (not yet solved)
-# TODO: implement
+def _xavier_param(*shape):
+    t = torch.empty(*shape, dtype=torch.float32, requires_grad=True)
+    torch.nn.init.xavier_uniform_(t)
+    return t
 
-# Step 71 - compute_batch_training_loss (not yet solved)
-# TODO: implement
+def _zeros_param(*shape):
+    return torch.zeros(*shape, dtype=torch.float32, requires_grad=True)
 
-# Step 72 - run_training_step_with_backprop (not yet solved)
-# TODO: implement
+def _ones_param(*shape):
+    return torch.ones(*shape, dtype=torch.float32, requires_grad=True)
 
-# Step 73 - run_training_loop_for_steps (not yet solved)
-# TODO: implement
+def init_encoder_layer_parameters(d_model, num_heads, d_ff):
+    """Return a dict of leaf tensors with requires_grad=True for one encoder layer."""
+    # TODO: allocate w_q, w_k, w_v, w_o, w1, b1, w2, b2, attn_gamma, attn_beta, ffn_gamma, ffn_beta.
+    return {
+        'w_q': _xavier_param(d_model, d_model),
+        'w_k': _xavier_param(d_model, d_model),
+        'w_v': _xavier_param(d_model, d_model),
+        'w_o': _xavier_param(d_model, d_model),
+        'w1': _xavier_param(d_model, d_ff),
+        'b1': _zeros_param(d_ff),
+        'w2': _xavier_param(d_ff, d_model),
+        'b2': _zeros_param(d_model),
+        'attn_gamma': _ones_param(d_model),
+        'attn_beta': _zeros_param(d_model),
+        'ffn_gamma': _ones_param(d_model),
+        'ffn_beta': _zeros_param(d_model),
+    }
 
-# Step 74 - pick_next_token_by_argmax (not yet solved)
-# TODO: implement
+# Step 53 - init_decoder_layer_parameters
 
-# Step 75 - compute_length_penalty (not yet solved)
-# TODO: implement
+def init_decoder_layer_parameters(d_model, num_heads, d_ff):
+    # TODO: return a dict of requires_grad tensors for one decoder layer
+    return {
+        'w_q_self': _xavier_param(d_model, d_model),
+        'w_k_self': _xavier_param(d_model, d_model),
+        'w_v_self': _xavier_param(d_model, d_model),
+        'w_o_self': _xavier_param(d_model, d_model),
+        'w_q_cross': _xavier_param(d_model, d_model),
+        'w_k_cross': _xavier_param(d_model, d_model),
+        'w_v_cross': _xavier_param(d_model, d_model),
+        'w_o_cross': _xavier_param(d_model, d_model),
+        'w1': _xavier_param(d_model, d_ff),
+        'b1': _zeros_param(d_ff),
+        'w2': _xavier_param(d_ff, d_model),
+        'b2': _zeros_param(d_model),
+        'self_gamma': _ones_param(d_model),
+        'self_beta': _zeros_param(d_model),
+        'cross_gamma': _ones_param(d_model),
+        'cross_beta': _zeros_param(d_model),
+        'ffn_gamma': _ones_param(d_model),
+        'ffn_beta': _zeros_param(d_model),
+    }
 
-# Step 76 - compute_candidate_scores (not yet solved)
-# TODO: implement
+# Step 54 - init_embedding_and_projection_parameters
 
-# Step 77 - select_top_k_candidates (not yet solved)
-# TODO: implement
+def init_embedding_and_projection_parameters(vocab_size, d_model, tie_weights=True):
+    """Allocate src/tgt embeddings and output projection (optionally tied)."""
+    # TODO: allocate three (vocab_size, d_model) tensors with requires_grad=True
+    src_embedding = _xavier_param(vocab_size, d_model)
+    tgt_embedding = _xavier_param(vocab_size, d_model)
+    output_projection = tgt_embedding if tie_weights else _xavier_param(vocab_size, d_model)
+    return {
+        'src_embedding': src_embedding,
+        'tgt_embedding': tgt_embedding,
+        'output_projection': output_projection,
+    }
 
-# Step 78 - append_tokens_to_beam_sequences (not yet solved)
-# TODO: implement
+# Step 55 - collect_model_parameters_into_list
 
-# Step 79 - mark_finished_beams (not yet solved)
-# TODO: implement
+def collect_model_parameters_into_list(encoder_layer_params, decoder_layer_params, embedding_params):
+    # TODO: walk the encoder, decoder, and embedding dicts and return a flat deduped list of tensors
+    params = []
+    seen = set()
+    for layer in encoder_layer_params:
+        for tensor in layer.values():
+            tid = id(tensor)
+            if tid not in seen:
+                seen.add(tid)
+                params.append(tensor)
+    for layer in decoder_layer_params:
+        for tensor in layer.values():
+            tid = id(tensor)
+            if tid not in seen:
+                seen.add(tid)
+                params.append(tensor)
+    for tensor in embedding_params.values():
+        tid = id(tensor)
+        if tid not in seen:
+            seen.add(tid)
+            params.append(tensor)
+    return params
 
-# Step 80 - select_best_finished_beam (not yet solved)
-# TODO: implement
+# Step 56 - shift_targets_right_with_start_token
+
+def shift_targets_right_with_start_token(target_ids, start_token_id):
+    # TODO: prepend start_token_id and drop the last column so output shape matches target_ids
+    start = torch.full(
+        (target_ids.size(0), 1),
+        start_token_id,
+        dtype=target_ids.dtype,
+        device=target_ids.device,
+    )
+    return torch.cat([start, target_ids[:, :-1]], dim=1)
+
+# Step 57 - compute_noam_learning_rate
+def compute_noam_learning_rate(step, d_model, warmup_steps):
+    # TODO: return the Noam warmup learning rate for the given step.
+    step = max(step, 1)
+    return float(d_model ** (-0.5) * min(step ** (-0.5), step * warmup_steps ** (-1.5)))
+
+# Step 58 - build_uniform_smoothing_distribution
+
+def build_uniform_smoothing_distribution(shape, vocab_size, epsilon):
+    # TODO: return a float tensor of `shape` filled with epsilon / (vocab_size - 2).
+    return torch.full(shape, epsilon / (vocab_size - 2), dtype=torch.float32)
+
+# Step 59 - set_confidence_on_gold_tokens
+
+def set_confidence_on_gold_tokens(smoothed_distribution, gold_token_ids, confidence):
+    """Place confidence mass at gold-token positions of a smoothed target distribution."""
+    # TODO: write the confidence value at each gold token id along the vocab axis
+    out = smoothed_distribution.clone()
+    out.scatter_(-1, gold_token_ids.unsqueeze(-1), confidence)
+    return out
+
+# Step 60 - zero_pad_column_and_pad_token_rows
+
+def zero_pad_column_and_pad_token_rows(smoothed_distribution, gold_token_ids, pad_id):
+    # TODO: zero the pad column and the rows where the gold token equals pad_id
+    out = smoothed_distribution.clone()
+    out[..., pad_id] = 0.0
+    out[gold_token_ids == pad_id] = 0.0
+    return out
+
+# Step 61 - compute_label_smoothed_kl_loss
+
+def compute_label_smoothed_kl_loss(log_probabilities, smoothed_distribution):
+    """Return the summed KL loss over all (batch, time, vocab) entries."""
+    # TODO: combine log_probabilities with the smoothed target distribution into a scalar loss
+    return -(smoothed_distribution * log_probabilities).sum()
+
+# Step 62 - average_loss_over_non_pad_tokens
+
+def average_loss_over_non_pad_tokens(total_loss, gold_token_ids, pad_id):
+    # TODO: divide total_loss by the count of non-pad tokens in gold_token_ids
+    n_tokens = (gold_token_ids != pad_id).sum().clamp(min=1)
+    if (gold_token_ids != pad_id).sum() == 0:
+        return total_loss * 0.0
+    return total_loss / n_tokens
+
+# Step 63 - compute_token_accuracy_ignoring_pad
+
+def compute_token_accuracy_ignoring_pad(log_probabilities, gold_token_ids, pad_id):
+    # TODO: argmax over vocab, compare to gold, average over non-pad positions only
+    preds = log_probabilities.argmax(dim=-1)
+    mask = gold_token_ids != pad_id
+    if mask.sum() == 0:
+        return torch.tensor(0.0)
+    return (preds[mask] == gold_token_ids[mask]).float().mean()
+
+# Step 64 - initialize_adam_optimizer_state
+
+def initialize_adam_optimizer_state(parameter_list):
+    """Allocate Adam m, v zero buffers and a step counter t=0."""
+    # TODO: allocate zero buffers for first and second moments, plus step counter
+    m = [torch.zeros_like(p, requires_grad=False) for p in parameter_list]
+    v = [torch.zeros_like(p, requires_grad=False) for p in parameter_list]
+    return {'m': m, 'v': v, 't': 0}
+
+# Step 65 - update_adam_first_moment
+
+def update_adam_first_moment(m_prev, grad, beta1):
+    """Return m_t = beta1 * m_prev + (1 - beta1) * grad."""
+    # TODO: apply the Adam first-moment EMA update and return the new tensor
+    return (beta1 * m_prev + (1 - beta1) * grad).detach()
+
+# Step 66 - update_adam_second_moment
+
+def update_adam_second_moment(v_prev, grad, beta2):
+    """Return v_t = beta2 * v_prev + (1 - beta2) * grad ** 2."""
+    # TODO: apply Adam's EMA update for the second moment of the gradient
+    return (beta2 * v_prev + (1 - beta2) * (grad ** 2)).detach()
+
+# Step 67 - apply_adam_bias_correction
+
+def apply_adam_bias_correction(m_t, v_t, beta1, beta2, step):
+    """Return bias-corrected (m_hat, v_hat) for Adam at the given step."""
+    # TODO: divide each moment by (1 - beta**step) using its respective beta
+    m_hat = m_t / (1 - beta1 ** step)
+    v_hat = v_t / (1 - beta2 ** step)
+    return m_hat, v_hat
+
+# Step 68 helper (used by scaffold; not a numbered Deep-ML step)
+def compute_adam_parameter_update(m_hat, v_hat, learning_rate, epsilon=1e-9):
+    return learning_rate * m_hat / (torch.sqrt(v_hat) + epsilon)
+
+# Step 69 - apply_adam_step_to_all_parameters
+
+def apply_adam_step_to_all_parameters(parameter_list, optimizer_state, learning_rate, beta1=0.9, beta2=0.98, epsilon=1e-9):
+    # TODO: increment t, then for each param with a grad update m, v, bias-correct, and subtract delta in place.
+    optimizer_state['t'] += 1
+    t = optimizer_state['t']
+    for i, param in enumerate(parameter_list):
+        if param.grad is None:
+            continue
+        grad = param.grad
+        m_t = update_adam_first_moment(optimizer_state['m'][i], grad, beta1)
+        v_t = update_adam_second_moment(optimizer_state['v'][i], grad, beta2)
+        optimizer_state['m'][i] = m_t
+        optimizer_state['v'][i] = v_t
+        m_hat, v_hat = apply_adam_bias_correction(m_t, v_t, beta1, beta2, t)
+        update = compute_adam_parameter_update(m_hat, v_hat, learning_rate, epsilon)
+        param.data.sub_(update)
+    return optimizer_state
+
+# Step 70 - zero_all_parameter_gradients
+
+def zero_all_parameter_gradients(parameter_list):
+    """Clear the .grad of every parameter tensor before the next backward pass."""
+    # TODO: clear the accumulated gradient on every parameter tensor in the list
+    for param in parameter_list:
+        param.grad = None
+
+# Step 71 - compute_batch_training_loss
+def compute_batch_training_loss(src_batch, tgt_batch, model_params, config):
+    # TODO: shift targets right, run the forward pass, build smoothed targets, and average the KL loss over non-pad tokens.
+    pad_id = config['pad_id']
+    start_id = config['start_id']
+    vocab_size = config['vocab_size']
+    smoothing = config.get('smoothing', config.get('label_smoothing', 0.1))
+    num_heads = config['num_heads']
+
+    decoder_input = shift_targets_right_with_start_token(tgt_batch, start_id)
+    log_probs = run_transformer_forward(src_batch, decoder_input, model_params, num_heads, pad_id)
+
+    smoothed = build_uniform_smoothing_distribution(log_probs.shape, vocab_size, smoothing)
+    confidence = 1.0 - smoothing
+    smoothed = set_confidence_on_gold_tokens(smoothed, tgt_batch, confidence)
+    smoothed = zero_pad_column_and_pad_token_rows(smoothed, tgt_batch, pad_id)
+
+    total_loss = compute_label_smoothed_kl_loss(log_probs, smoothed)
+    return average_loss_over_non_pad_tokens(total_loss, tgt_batch, pad_id)
+
+# Step 72 - run_training_step_with_backprop
+
+def run_training_step_with_backprop(src_batch, tgt_batch, parameter_list, model_params, optimizer_state, step_number, config):
+    """Run one training iteration: zero grads, forward, backward, Noam LR, Adam step.
+
+    Returns the scalar loss value for the step as a Python float.
+    """
+    # TODO: zero grads, compute loss, backward, look up Noam LR, apply Adam step
+    zero_all_parameter_gradients(parameter_list)
+    loss = compute_batch_training_loss(src_batch, tgt_batch, model_params, config)
+    loss.backward()
+    lr = compute_noam_learning_rate(step_number, config['d_model'], config['warmup_steps'])
+    beta1 = config.get('beta1', 0.9)
+    beta2 = config.get('beta2', 0.98)
+    epsilon = config.get('epsilon', 1e-9)
+    apply_adam_step_to_all_parameters(parameter_list, optimizer_state, lr, beta1, beta2, epsilon)
+    return float(loss.detach())
+
+# Step 73 - run_training_loop_for_steps
+def run_training_loop_for_steps(batches, parameter_list, model_params, optimizer_state, num_steps, config):
+    """Run num_steps training iterations, cycling through batches, and return per-step losses."""
+    # TODO: iterate for num_steps steps, calling run_training_step_with_backprop each time
+    losses = []
+    n_batches = len(batches)
+    for step in range(1, num_steps + 1):
+        src_batch, tgt_batch = batches[(step - 1) % n_batches]
+        loss = run_training_step_with_backprop(
+            src_batch, tgt_batch, parameter_list, model_params, optimizer_state, step, config
+        )
+        losses.append(loss)
+    return losses
+
+# Step 74 - pick_next_token_by_argmax
+
+def pick_next_token_by_argmax(final_step_logits):
+    """Greedy: return argmax token id per batch row.
+
+    final_step_logits: FloatTensor of shape (batch, vocab_size)
+    returns: LongTensor of shape (batch,)
+    """
+    # TODO: pick the next greedy token id by taking the argmax over the vocab axis
+    return final_step_logits.argmax(dim=-1)
+
+# Step 75 - compute_length_penalty
+def compute_length_penalty(sequence_length, alpha):
+    # TODO: return the Google NMT length penalty for the given sequence_length and alpha.
+    return float(((5 + sequence_length) / 6) ** alpha)
+
+# Step 76 - compute_candidate_scores
+
+def compute_candidate_scores(beam_scores, next_token_log_probs):
+    # TODO: add each beam's running log-prob to its row of next-token log probs.
+    return beam_scores.unsqueeze(1) + next_token_log_probs
+
+# Step 77 - select_top_k_candidates
+
+def select_top_k_candidates(candidate_scores, k):
+    # TODO: pick the top k (beam_index, token_id, score) triples from candidate_scores
+    num_beams, vocab_size = candidate_scores.shape
+    flat = candidate_scores.reshape(-1)
+    scores, indices = torch.topk(flat, k)
+    beam_indices = indices // vocab_size
+    token_ids = indices % vocab_size
+    return {
+        'beam_indices': beam_indices,
+        'token_ids': token_ids,
+        'scores': scores,
+    }
+
+# Step 78 - append_tokens_to_beam_sequences
+
+def append_tokens_to_beam_sequences(beam_sequences, beam_indices, token_ids):
+    # TODO: gather parent beam rows and append the new token ids as the last column
+    parents = beam_sequences[beam_indices]
+    return torch.cat([parents, token_ids.unsqueeze(1)], dim=1)
+
+# Step 79 - mark_finished_beams
+
+def mark_finished_beams(token_ids, finished_flags, end_token_id):
+    # TODO: return updated boolean finished flags for each beam given the new token ids
+    return finished_flags | (token_ids == end_token_id)
+
+# Step 80 - select_best_finished_beam
+def select_best_finished_beam(finished_sequences, finished_scores, alpha):
+    # TODO: return the finished beam with the highest length-penalized score
+    best_seq = None
+    best_score = float('-inf')
+    for seq, raw_score in zip(finished_sequences, finished_scores):
+        length = int(seq.numel()) if hasattr(seq, 'numel') else len(seq)
+        norm = float(raw_score) / compute_length_penalty(length, alpha)
+        if norm > best_score:
+            best_score = norm
+            best_seq = seq
+    return {'sequence': best_seq, 'score': best_score}
 
